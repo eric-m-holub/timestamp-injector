@@ -49,6 +49,7 @@ Becomes:
 ```
 {"timestamp":2024-11-04+04%3A48%3A49+UTC}
 ```
+<br>
 
 ## Debugging
 All modified calls will appear in the Extension tab in the 'Timestamp Injector' output in Burp Suite.
