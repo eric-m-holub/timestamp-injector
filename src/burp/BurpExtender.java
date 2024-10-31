@@ -27,17 +27,20 @@ import java.awt.datatransfer.StringSelection;
 
 public class BurpExtender implements IBurpExtender, IHttpListener, ITab, IExtensionStateListener
 {
+    // Burp Extension variables
     private burp.IExtensionHelpers helpers;
     private PrintWriter stdout;
     private PrintWriter stderr;
     private IBurpExtenderCallbacks callbacks;
 
+    // JPanel Interactive Elements
     private JPanel panel;
     private JLabel currentTimeStampLabel;
     private JLabel currentUnixTimeLabel;
     private JLabel currentUnixTimeWithOffsetLabel;
     private Timer timer;
 
+    // User-defined values
     private String selectedTimezone = "UTC";
     private String selectedDateFormat = "yyyy-MM-dd HH:mm:ss z";
     private String selectedOffset = "+";
@@ -45,10 +48,11 @@ public class BurpExtender implements IBurpExtender, IHttpListener, ITab, IExtens
     private int selectedOffsetValue = 0;
 
 
+    // Run when extension is loaded
     @Override
     public void registerExtenderCallbacks(IBurpExtenderCallbacks callbacks)
     {
-    	  this.callbacks = callbacks;
+    	this.callbacks = callbacks;
         // obtain an extension helpers object
         helpers = callbacks.getHelpers();
         stdout = new PrintWriter(callbacks.getStdout(), true);
@@ -57,10 +61,10 @@ public class BurpExtender implements IBurpExtender, IHttpListener, ITab, IExtens
         // set our extension name
         callbacks.setExtensionName("Timestamp Injector");
 
-        // register ourselves as an HTTP listener
+        // Start listening for HTTP Requests
         callbacks.registerHttpListener(this);
 
-        // Create the tab
+        // Create the Extension Tab, and start Unix Clock Timer
         SwingUtilities.invokeLater(() -> {
             createBurpTab();
             startTimer();
@@ -69,6 +73,7 @@ public class BurpExtender implements IBurpExtender, IHttpListener, ITab, IExtens
 
         callbacks.registerExtensionStateListener(this);
 
+        // Print out welcome message to output
         stdout.println("Timestamp Injector successfully loaded. Here are the injection commands:\n\nUnixTimeS — inject unix time (seconds)\nUnixTimeMS — inject unix time (milliseconds)\nTimeStamp — inject custom timestamp\nURLTimeStamp — inject custom timestamp (URL-encoded)\n");
     }
 
@@ -76,32 +81,37 @@ public class BurpExtender implements IBurpExtender, IHttpListener, ITab, IExtens
 
     	int row = 0;
 
+	// Set grid layout
         panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5); // Padding around components
 
-
+	// Create static label
         gbc.gridx = 0;
         JLabel currentTimeLabel = new JLabel("Current Time:");
         panel.add(currentTimeLabel, gbc);
 
+	//Create label that displays current Unix time
         currentUnixTimeLabel = new JLabel("");
         gbc.gridx = 1;
         gbc.gridy = row;
         panel.add(currentUnixTimeLabel, gbc);
 
+	//Next row!
         row++;
 
+	// Create static label
         gbc.gridx = 0;
         gbc.gridy = row;
         JLabel timeLabel = new JLabel("Time Offset:");
         panel.add(timeLabel, gbc);
 
+	// Shove next few elements into subpanel
         gbc.gridx = 1;
         gbc.gridy = row;
         JPanel subPanel2 = new JPanel();
 
-
+	// Create selector for + or - offset
         String[] offsets = {"+","-"};
         JComboBox<String> offsetSelector = new JComboBox<>(offsets);
         offsetSelector.setPreferredSize(new Dimension(40, 20));
@@ -113,6 +123,7 @@ public class BurpExtender implements IBurpExtender, IHttpListener, ITab, IExtens
         });
         subPanel2.add(offsetSelector);
 
+	// Create text field that only accepts numerical input for offset
         JTextField offsetValueText = new JTextField("", 10);
         offsetValueText.setPreferredSize(new Dimension(30, 20));
         ((PlainDocument) offsetValueText.getDocument()).setDocumentFilter(new NumericFilter());
@@ -136,6 +147,7 @@ public class BurpExtender implements IBurpExtender, IHttpListener, ITab, IExtens
 
         subPanel2.add(offsetValueText);
 
+	// Create selector for time unit
         String[] units = {"msec","sec","min","hr","day"};
         JComboBox<String> unitSelector = new JComboBox<>(units);
         unitSelector.setPreferredSize(new Dimension(70, 20));
@@ -150,28 +162,31 @@ public class BurpExtender implements IBurpExtender, IHttpListener, ITab, IExtens
 
         panel.add(subPanel2, gbc);
 
+	// Next row!
         row++;
 
+	// Create static label
         gbc.gridx = 0;
         gbc.gridy = row;
         JLabel timeWithOffsetLabel = new JLabel("Time w/ Offset:");
         panel.add(timeWithOffsetLabel, gbc);
 
-
+	// Create label that displays Unix time with defined offset
         currentUnixTimeWithOffsetLabel = new JLabel("");
         gbc.gridx = 1;
         gbc.gridy = row;
         panel.add(currentUnixTimeWithOffsetLabel,gbc);
 
+	// Next row!
         row++;
 
+	// Create static label
         gbc.gridx = 0;
         gbc.gridy = row;
         JLabel timezoneLabel = new JLabel("Timezone:");
         panel.add(timezoneLabel, gbc);
 
-
-        // Create the timezone selector
+	// Create selector for timezone
         String[] timezones = TimeZone.getAvailableIDs();
         JComboBox<String> timezoneSelector = new JComboBox<>(timezones);
         timezoneSelector.setSelectedItem(selectedTimezone);
@@ -179,7 +194,6 @@ public class BurpExtender implements IBurpExtender, IHttpListener, ITab, IExtens
         gbc.gridy = row;
         panel.add(timezoneSelector, gbc);
 
-        // Add an action listener to handle selection
         timezoneSelector.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -188,14 +202,16 @@ public class BurpExtender implements IBurpExtender, IHttpListener, ITab, IExtens
         });
         panel.add(Box.createVerticalStrut(10));
 
+	// Next row!
         row++;
 
-        // Create Date Format Input
+	// Create static label
         JLabel timestampLabel = new JLabel("Timestamp Format:");
         gbc.gridx = 0;
         gbc.gridy = row;
         panel.add(timestampLabel, gbc);
 
+	// Create text field for timestamp format
         JTextField textField = new JTextField(selectedDateFormat, 20);
         textField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
@@ -217,24 +233,23 @@ public class BurpExtender implements IBurpExtender, IHttpListener, ITab, IExtens
         gbc.gridy = row;
         panel.add(textField, gbc);
 
+	// Next row!
         row++;
 
+	// Create static label
         gbc.gridx = 0;
         gbc.gridy = row;
         JLabel timneStampLabel = new JLabel("Timestamp w/ Offset:");
         panel.add(timneStampLabel, gbc);
 
+	// Create label that displays current timestamp
         currentTimeStampLabel = new JLabel("");
-
-
         gbc.gridx = 1;
         gbc.gridy = row;
         panel.add(currentTimeStampLabel, gbc);
-
-        row+=2;
-
     }
 
+    // Timer which updates Unix time and timestamps values for a live view
     private void startTimer() {
         this.timer = new Timer(1000, new ActionListener() {
             @Override
@@ -250,6 +265,10 @@ public class BurpExtender implements IBurpExtender, IHttpListener, ITab, IExtens
                 Date dateWithOffset = Date.from(offsetTime);
                 String timeStamp = formatDate(dateWithOffset);
 
+                Color color = timeStamp == null ? Color.RED : Color.BLACK;
+
+                updateTimestampLabel(timeStamp == null ? "Invalid Timestamp Format" : timeStamp, color);
+
                 if (timeStamp != null) {
                 	currentTimeStampLabel.setText(timeStamp);
                 }
@@ -260,6 +279,7 @@ public class BurpExtender implements IBurpExtender, IHttpListener, ITab, IExtens
         timer.start();
     }
 
+    // Use defined timestamp format to create timestamp
     private String formatDate(Date date) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat(selectedDateFormat);
@@ -271,6 +291,7 @@ public class BurpExtender implements IBurpExtender, IHttpListener, ITab, IExtens
         }
     }
 
+    // Calculate Unix time with defined offset
     private Instant getCurrentInstantWithOffset()
     {
     	Instant now = Instant.now();
@@ -300,13 +321,25 @@ public class BurpExtender implements IBurpExtender, IHttpListener, ITab, IExtens
     	return now.plus(offset);
     }
 
+    // Update timstamp label with text and color (indicates error)
+    private void updateTimestampLabel(String text, Color color)
+    {
+    	currentTimeStampLabel.setForeground(color);
+    	currentTimeStampLabel.setText(text);
+    }
+
+    // Run when user updates the timestamp format text field. Check if they enter an invalid value
     private void updateDateFormat(String dateFormat)
     {
     	this.selectedDateFormat = dateFormat;
     	String formatedDate = formatDate(new Date());
-    	currentTimeStampLabel.setText(formatedDate == null ? "Invalid Date Format" : "");
+
+    	Color color = formatedDate == null ? Color.RED : Color.BLACK;
+    	String text = formatedDate == null ? "Invalid Timestamp Format" : formatedDate;
+    	updateTimestampLabel(text, color);
     }
 
+    // Run when user updates the offset text field. Numeric filter already in place, convert string to int
     private void updateOffset(String text)
     {
         try {
@@ -317,6 +350,7 @@ public class BurpExtender implements IBurpExtender, IHttpListener, ITab, IExtens
         }
     }
 
+    // Search the HTTP request body and headers for strings to replace and replace them
     private RequestModResult modifyRequestContent(String content, Instant now, Date dateNow)
     {
     	    String ret = content;
@@ -338,23 +372,23 @@ public class BurpExtender implements IBurpExtender, IHttpListener, ITab, IExtens
 
             if (ret.contains("URLTimeStamp") || ret.contains("TimeStamp")) {
                 String formatedDate = formatDate(dateNow);
-                try {
-                	ret = ret.replaceAll("URLTimeStamp", URLEncoder.encode(formatedDate, "UTF-8"));
-                } catch (UnsupportedEncodingException e) {
-                  stderr.println("Error URL-encoding value: " + ret);
-        	      }
-        	      ret = ret.replaceAll("TimeStamp", formatedDate);
 
-                updated = true;
+                if (formatedDate != null) {
+		        try {
+		        	ret = ret.replaceAll("URLTimeStamp", URLEncoder.encode(formatedDate, "UTF-8"));
+		        } catch (UnsupportedEncodingException e) {
+		          stderr.println("Error URL-encoding value: " + ret);
+			}
+
+			ret = ret.replaceAll("TimeStamp", formatedDate);
+		        updated = true;
+                }
             }
 
             return new RequestModResult(ret, updated);
     }
 
-
-    //
-    // implement IHttpListener
-    //
+    // Burp native function which runs whenever Burp executes an HTTP request
     @Override
     public void processHttpMessage(int toolFlag, boolean messageIsRequest, burp.IHttpRequestResponse messageInfo)
     {
@@ -362,22 +396,18 @@ public class BurpExtender implements IBurpExtender, IHttpListener, ITab, IExtens
         Instant now = getCurrentInstantWithOffset();
         Date dateNow = Date.from(now);
 
-        // only process requests
         if (messageIsRequest) {
-            // get the HTTP service for the request
+
             burp.IHttpService httpService = messageInfo.getHttpService();
             burp.IRequestInfo iRequest = helpers.analyzeRequest(messageInfo);
 
             String request = new String(messageInfo.getRequest());
-
             List<String> headers = iRequest.getHeaders();
-            // get the request body
             String reqBody = request.substring(iRequest.getBodyOffset());
 
             RequestModResult reqBodyMod = modifyRequestContent(reqBody, now, dateNow);
             reqBody = reqBodyMod.content;
             updated = reqBodyMod.updated;
-
 
             for (int i = 0; i < headers.size(); i++) {
                 String header = headers.get(i);
@@ -386,38 +416,43 @@ public class BurpExtender implements IBurpExtender, IHttpListener, ITab, IExtens
                 headers.set(i, headerBodyMod.content);
             }
 
-
+	    // Print to output whenever a HTTP request is changed
             if (updated) {
-                stdout.println("-----Request Before Plugin Update-------");
+                stdout.println("-----Request Before Extension Update-------");
                 stdout.println(helpers.bytesToString(messageInfo.getRequest()));
                 stdout.println("-----end output-------");
 
                 byte[] message = helpers.buildHttpMessage(headers, reqBody.getBytes());
                 messageInfo.setRequest(message);
 
-                stdout.println("-----Request After Plugin Update-------");
+                stdout.println("-----Request After Extension Update-------");
                 stdout.println(helpers.bytesToString(messageInfo.getRequest()));
                 stdout.println("-----end output-------");
             }
         }
     }
 
+    // Define tab name
     @Override
     public String getTabCaption() {
         return "Timestamp Injector";
     }
 
+    // Return UI Tab
     @Override
     public Component getUiComponent() {
         return panel;
     }
 
+    // Run Function when extension is unloaded from Burp Suite
     @Override
     public void extensionUnloaded() {
         this.timer.stop();
     }
 }
 
+
+// Class that filters text input to only include numeric characters
 class NumericFilter extends DocumentFilter {
         @Override
         public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
@@ -435,15 +470,16 @@ class NumericFilter extends DocumentFilter {
 
         @Override
         public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
-            super.remove(fb, offset, length); // Allow removal of characters
+            super.remove(fb, offset, length);
         }
 
-        // Helper method to check if a string is numeric
+
         private boolean isNumeric(String str) {
-            return str != null && str.matches("\\d*"); // Matches digits only
+            return str != null && str.matches("\\d*");
         }
     }
 
+// Return result from HTTP request check
 class RequestModResult {
 	public String content;
 	public boolean updated;
