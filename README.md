@@ -16,6 +16,7 @@ Becomes:
 ```
 {"timestamp": 1730349175}
 ```
+
 If you want a timestamp in milliseconds:
 ```
 {"timestamp": UnixTimeMS}
@@ -24,6 +25,7 @@ Becomes:
 ```
 {"timestamp": 1730349333065}
 ```
+
 
 ### `TimeStamp` and `URLTimeStamp`
 To inject a custom timestamp defined in the UI:
@@ -34,6 +36,7 @@ Becomes:
 ```
 {"timestamp":2024-11-04 04:43:53 UTC}
 ```
+
 You can do the same thing, but automatically URL-encode the timestamp with:
 ```
 {"timestamp": URLTimeStamp}
@@ -43,11 +46,19 @@ Becomes:
 {"timestamp":2024-11-04+04%3A48%3A49+UTC}
 ```
 
+
+## Build
+Requires Gradle to build. Once that is installed, run the following command from the root directory:
+```
+gradle build
+```
+That should create a 'build' directory with a jar file you can import into Burp Suite.
+
 ## Releases
-See the [Releases] page for a pre-built jar.
+See the [Releases](https://github.com/eric-m-holub/timestamp-injector/releases/) page for a pre-built jar.
 
 I hope to have this extension on the BAppStore soon.
 
 ## Acknowledgements
-This extension took inspiration from Alex Lauerman's Token Incrementor Burp Extension. Link below
+This extension took inspiration from Alex Lauerman's "Token Incrementor" Burp Extension. Link below.
 https://github.com/PortSwigger/token-incrementor
