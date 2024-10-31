@@ -69,7 +69,7 @@ public class BurpExtender implements IBurpExtender, IHttpListener, ITab, IExtens
 
         callbacks.registerExtensionStateListener(this);
 
-        stdout.println("Timestamp Injector successfully loaded. Here are the injection commands:\n\nUnixTimeS — inject unix time (seconds)\nUnixTimeMS — inject unix time (milliseconds)\nTimeStamp — inject custom timestamp\nURLTimeStamp — inject custom timestamp (URL-encoded)");
+        stdout.println("Timestamp Injector successfully loaded. Here are the injection commands:\n\nUnixTimeS — inject unix time (seconds)\nUnixTimeMS — inject unix time (milliseconds)\nTimeStamp — inject custom timestamp\nURLTimeStamp — inject custom timestamp (URL-encoded)\n");
     }
 
     private void createBurpTab() {
@@ -312,6 +312,7 @@ public class BurpExtender implements IBurpExtender, IHttpListener, ITab, IExtens
         try {
             this.selectedOffsetValue = Integer.parseInt(text);
         } catch (NumberFormatException e) {
+            stderr.println("Error parsing offset: " + text);
             this.selectedOffsetValue = 0;
         }
     }
@@ -340,9 +341,9 @@ public class BurpExtender implements IBurpExtender, IHttpListener, ITab, IExtens
                 try {
                 	ret = ret.replaceAll("URLTimeStamp", URLEncoder.encode(formatedDate, "UTF-8"));
                 } catch (UnsupportedEncodingException e) {
-            		stdout.println("Invalid URL-encoding conversion: " + formatedDate);
-        	}
-        	ret = ret.replaceAll("TimeStamp", formatedDate);
+                  stderr.println("Error URL-encoding value: " + ret);
+        	      }
+        	      ret = ret.replaceAll("TimeStamp", formatedDate);
 
                 updated = true;
             }
