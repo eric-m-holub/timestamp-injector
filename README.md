@@ -55,6 +55,8 @@ All modified calls will appear in the Extension tab in the 'Timestamp Injector' 
 
 ![UI](./debug.png)
 
+<br>
+
 ## Build
 Requires Gradle to build. Once that is installed, run the following command from the root directory:
 ```
@@ -62,10 +64,14 @@ gradle build
 ```
 That should create a 'build' directory with a jar file you can import into Burp Suite.
 
-## Releases
-See the [Releases](https://github.com/eric-m-holub/timestamp-injector/releases/) page for pre-built jar files.
+<br>
 
-I hope to have this extension on the BAppStore soon.
+## Releases
+See the [Releases](https://github.com/eric-m-holub/timestamp-injector/releases/latest) page for pre-built jar files.
+
+I hope to have this extension on the BApp Store soon.
+
+<br>
 
 ## Acknowledgements
 This extension took inspiration from Alex Lauerman's [Token Incrementor](https://github.com/PortSwigger/token-incrementor) Burp Extension.
