@@ -412,7 +412,7 @@ public class BurpExtender implements IBurpExtender, IHttpListener, ITab, IExtens
             for (int i = 0; i < headers.size(); i++) {
                 String header = headers.get(i);
                 RequestModResult headerBodyMod = modifyRequestContent(header, now, dateNow);
-                updated = headerBodyMod.updated;
+                updated = updated ? true : headerBodyMod.updated;
                 headers.set(i, headerBodyMod.content);
             }
 
