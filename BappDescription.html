@@ -1,0 +1,21 @@
+<p>Easily inject up-to-date timestamps into HTTP requests</p>
+
+<p>If you have an API that needs a current or non-duplicate timestamp value to return properly, you can replace the old timestamp value with "UnixTimeS" to inject the current Epoch time into the call.</p>
+
+<p>It will match:</p>
+
+<blockquote><code>{"timestamp":UnixTimeS}</code></blockquote>
+
+<p>And replace it with:</p>
+
+<blockquote><code>{"timestamp":1730346030}</code></blockquote>
+
+You can define a time offset in the UI so that the injected timestamp occurs in either the future or past.
+
+Other possible commands are:
+
+<ul>
+        <li>UnixTimeMS — Injects Epoch time in milliseconds</li>
+        <li>TimeStamp — Injects a custom UI-defined timestamp. I.E. yyyy-MM-dd</li>
+        <li>URLTimeStamp — Same as previous command, but URL-encoded</li>
+</ul>
