@@ -49,6 +49,18 @@ Becomes:
 ```
 {"timestamp":2024-11-04+04%3A48%3A49+UTC}
 ```
+
+<br>
+
+Custom timestamps are validated and generated using the [SimpleDateFormat](https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html) Java class. You can use single quotes (') around text to include it as-is. For instance:
+```
+yyyy-MM-dd'T'HH:mm:ss'Z'
+```
+Translates to:
+```
+2024-10-31T04:14:31Z
+```
+
 <br>
 
 ## Debugging
