@@ -10,12 +10,20 @@
 
 <blockquote><code>{"timestamp":1730346030}</code></blockquote>
 
-You can define a time offset in the UI so that the injected timestamp occurs in either the future or past.
+You can also define a time offset in the UI so that the injected timestamp occurs in either the future or past.
 
 Other possible commands are:
 
 <ul>
         <li>UnixTimeMS — Injects Epoch time in milliseconds</li>
-        <li>TimeStamp — Injects a custom UI-defined timestamp. I.E. yyyy-MM-dd</li>
+        <li>TimeStamp — Injects a custom timestamp defined in the UI. I.E. yyyy-MM-dd</li>
         <li>URLTimeStamp — Same as previous command, but URL-encoded</li>
 </ul>
+
+<p>Custom timestamps are generated using the SimpleDateFormat Java class. Please see their documentation for a list of supported characters. You can include text as-is into your timestamp with single quotes:</p>
+
+<blockquote><code>yyyy-MM-dd'T'HH:mm:ss'Z'</code></blockquote>
+
+<p>Becomes:</p>
+
+<blockquote><code>2024-10-31T04:14:02Z</code></blockquote>
