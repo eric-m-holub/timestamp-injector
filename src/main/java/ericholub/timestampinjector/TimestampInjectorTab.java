@@ -7,7 +7,6 @@ import java.awt.event.ActionListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.PlainDocument;
-import burp.api.montoya.persistence.Persistence;
 
 import java.util.Date;
 import java.util.TimeZone;
@@ -71,7 +70,6 @@ public class TimestampInjectorTab extends JPanel {
 		    public void actionPerformed(ActionEvent e) {
 		    	String value = (String) offsetSelector.getSelectedItem();
 		        main.selectedOffset = value;
-		        main.persist.setString("selectedOffset", value);
 		    }
 		});
 		offsetSelector.setSelectedItem(main.selectedOffset);
@@ -111,7 +109,6 @@ public class TimestampInjectorTab extends JPanel {
 		    public void actionPerformed(ActionEvent e) {
 		        String value = (String) unitSelector.getSelectedItem();
 		        main.selectedTimeUnit = value;
-		        main.persist.setString("selectedTimeUnit", value);
 		    }
 		});
 		unitSelector.setSelectedItem(main.selectedTimeUnit);
@@ -152,7 +149,6 @@ public class TimestampInjectorTab extends JPanel {
 		    public void actionPerformed(ActionEvent e) {
 		        String value = (String) timezoneSelector.getSelectedItem();
 		        main.selectedTimezone = value;
-		        main.persist.setString("selectedTimezone", value);
 		    }
 		});
 		gbc.gridx = 1;
@@ -250,7 +246,6 @@ public class TimestampInjectorTab extends JPanel {
 	private void updateDateFormat(String dateFormat)
 	{
 		main.selectedDateFormat = dateFormat;
-		main.persist.setString("selectedDateFormat",dateFormat);
 		String formatedDate = main.formatDate(new Date());
 		Color color = formatedDate == null ? Color.RED : Color.BLACK;
 		String text = formatedDate == null ? "Invalid Timestamp Format" : formatedDate;
@@ -263,10 +258,8 @@ public class TimestampInjectorTab extends JPanel {
 		try {
 		    int value = Integer.parseInt(text);
 		    main.selectedOffsetValue = value;
-		    main.persist.setInteger("selectedOffsetValue",value);
 		} catch (NumberFormatException e) {
 		    main.selectedOffsetValue = 0;
-		    main.persist.setInteger("selectedOffsetValue",0);
 		}
 	}
 
