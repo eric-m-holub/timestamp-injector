@@ -29,34 +29,35 @@ class TimestampHttpHandler implements HttpHandler {
 
     @Override
     public RequestToBeSentAction handleHttpRequestToBeSent(HttpRequestToBeSent requestToBeSent) {
-        Annotations annotations = requestToBeSent.annotations();
-        Instant now = main.getCurrentInstantWithOffset();
-        Date dateNow = Date.from(now);
 
-        List<HttpHeader> headers = requestToBeSent.headers();
-        String body = requestToBeSent.bodyToString();
+    	String rawRequestString = requestToBeSent.toString();
+    	ArrayList<String> injPoints = checkContentForInjectionPoints(rawRequestString);
 
-        HttpRequest finalRequest = (HttpRequest) requestToBeSent;
+    	HttpRequest finalRequest = (HttpRequest) requestToBeSent;
+    	Annotations annotations = requestToBeSent.annotations();
 
-        for (int i = 0; i < headers.size(); i++) {
-                HttpHeader header = headers.get(i);
+    	if (injPoints.size() > 0) {
 
-                ArrayList<String> injPoints = checkContentForInjectionPoints(header.value());
+		Instant now = main.getCurrentInstantWithOffset();
+		Date dateNow = Date.from(now);
 
-                if (injPoints.size() > 0) {
-               		String headerMod = modifyRequestContent(header.value(), injPoints, now, dateNow);
-               		printBeforeAfter("Header", header.toString(), header.name()+": "+headerMod);
-               		finalRequest = finalRequest.withHeader(HttpHeader.httpHeader(header.name(),headerMod));
-                }
-        }
+		List<HttpHeader> headers = requestToBeSent.headers();
+		String body = requestToBeSent.bodyToString();
+		String path = requestToBeSent.path();
 
+		for (int i = 0; i < headers.size(); i++) {
+		        HttpHeader header = headers.get(i);
+	       		String headerMod = modifyRequestContent(header.value(), injPoints, now, dateNow);
+	       		finalRequest = finalRequest.withHeader(HttpHeader.httpHeader(header.name(),headerMod));
+		}
 
-        ArrayList<String> injPointsBody = checkContentForInjectionPoints(body);
-        if (injPointsBody.size() > 0) {
-       		String reqBodyMod = modifyRequestContent(body, injPointsBody, now, dateNow);
-       		printBeforeAfter("Body", body, reqBodyMod);
-        	finalRequest = finalRequest.withBody(reqBodyMod);
-        }
+       		String reqBodyMod = modifyRequestContent(body, injPoints, now, dateNow);
+		finalRequest = finalRequest.withBody(reqBodyMod);
+
+    		String reqPathMod = modifyRequestContent(path, injPoints, now, dateNow);
+		finalRequest = finalRequest.withPath(reqPathMod);
+
+    	}
 
         return continueWith(finalRequest, annotations);
     }
@@ -103,15 +104,15 @@ class TimestampHttpHandler implements HttpHandler {
             }
 
             if (injPoints.contains("URLTimeStamp") && formatedDate != null) {
-	    	        try {
-			               ret = ret.replaceAll("URLTimeStamp", URLEncoder.encode(formatedDate, "UTF-8"));
-		             } catch (UnsupportedEncodingException e) {
-		  	             main.log.logToError("Error URL-encoding value: " + ret);
-		             }
+	    	try {
+			ret = ret.replaceAll("URLTimeStamp", URLEncoder.encode(formatedDate, "UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+		  	main.log.logToError("Error URL-encoding value: " + ret);
+		}
             }
 
             if (injPoints.contains("TimeStamp") && formatedDate != null) {
-		            ret = ret.replaceAll("TimeStamp", formatedDate);
+		ret = ret.replaceAll("TimeStamp", formatedDate);
             }
 
             return ret;
