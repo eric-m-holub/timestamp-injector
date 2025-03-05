@@ -63,13 +63,6 @@ Translates to:
 
 <br>
 
-## Debugging
-All modified calls will appear in the Extension tab in the 'Timestamp Injector' output in Burp Suite.
-
-![UI](./debug.png)
-
-<br>
-
 ## Build
 Requires Gradle to build. Once that is installed, run the following command from the root directory:
 ```
@@ -79,10 +72,14 @@ That should create a 'build' directory with a jar file you can import into Burp 
 
 <br>
 
+## BApp Store
+Timestamp Injector is now on the BApp Store:
+[Timestamp Injector BApp Store](https://portswigger.net/bappstore/c8421bc7b5884bd6b8c2ad89157f3860)
+
+<br>
+
 ## Releases
 See the [Releases](https://github.com/eric-m-holub/timestamp-injector/releases/latest) page for pre-built jar files.
-
-I hope to have this extension on the BApp Store soon.
 
 <br>
 
